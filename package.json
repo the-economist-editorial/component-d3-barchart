@@ -1,12 +1,12 @@
 {
-  "name": "@economist/component-d3-xaxis",
+  "name": "@economist/component-d3-barchart",
   "version": "1.0.0",
-  "description": "D3 x-axis component",
+  "description": "D3 bar chart component",
   "author": "The Economist (http://economist.com)",
   "license": "ISC",
-  "repository": "git://github.com/the-economist-editorial/component-d3-xaxis",
-  "homepage": "http://github.com/the-economist-editorial/component-d3-xaxis",
-  "bugs": "http://github.com/the-economist-editorial/component-d3-xaxis/issues",
+  "repository": "git://github.com/the-economist-editorial/component-d3-barchart",
+  "homepage": "http://github.com/the-economist-editorial/component-d3-barchart",
+  "bugs": "http://github.com/the-economist-editorial/component-d3-barchart/issues",
   "main": "index.js",
   "files": [
     "*.js",
@@ -65,7 +65,8 @@
   },
   "dependencies": {
     "d3": "^3.5.6",
-    "react": "^0.13.3"
+    "react": "^0.13.3",
+    "@economist/component-d3-xaxis": "^1.0.2"
   },
   "devDependencies": {
     "@economist/component-devpack": "^2.5.0",
