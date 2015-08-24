@@ -1,6 +1,7 @@
 import React from 'react';
 import d3 from 'd3';
 import D3xAxis from '@economist/component-d3-xaxis';
+import D3yAxis from '@economist/component-d3-yaxis';
 
 export default class D3BarChart extends React.Component {
 
@@ -11,7 +12,8 @@ export default class D3BarChart extends React.Component {
       duration: React.PropTypes.number,
       height: React.PropTypes.number,
       margins: React.PropTypes.object,
-      orient: React.PropTypes.string,
+      xorient: React.PropTypes.string,
+      yorient: React.PropTypes.string,
       test: React.PropTypes.string,
       width: React.PropTypes.number,
       xscale: React.PropTypes.func,
@@ -21,10 +23,18 @@ export default class D3BarChart extends React.Component {
   // DEFAULT PROPS
   static get defaultProps() {
     return {
-      domain: [ 0, 100 ],
+      tempcategories: [
+        {"category": "One", "value": 20},
+        {"category": "Two", "value": 40},
+        {"category": "Three", "value": 60},
+        {"category": "Four", "value": 80},
+      ],
+      xdomain: [ 0, 100 ],
+      ydomain: [],
       duration: 1000,
       margins: { top: 20, right: 30, bottom: 30, left: 60 },
-      orient: 'bottom',
+      xorient: 'bottom',
+      yorient: 'left',
       width: 300,
       // xscale: {
       //   min: 0,
@@ -38,7 +48,8 @@ export default class D3BarChart extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      orient: this.props.orient,
+      xorient: this.props.xorient,
+      yorient: this.props.yorient,
     };
   }
 
@@ -67,12 +78,22 @@ export default class D3BarChart extends React.Component {
       'width': innerW,
       'height': innerH,
     };
-    // Assemble the scale object
+
+    // Assemble the x-scale object
     const xscale = d3.scale.linear()
       .range([ 0, innerW ])
-      .domain(this.props.domain);
-    // const xaxis = d3.svg.axis();
-    this.setState({ xscale, bounds });
+      // Currently using the default xdomain prop:
+      .domain(this.props.xdomain);
+
+    // Assemble the y-scale object
+    const ydomain = this.props.tempcategories.map(function(d) {
+      return d.category;
+    })
+    const yscale = d3.scale.ordinal()
+      .range([ innerH, 0 ])
+      .domain(ydomain);
+    // Set state
+    this.setState({ xscale, yscale, bounds });
   }
 
   // COMPONENT DID MOUNT
@@ -93,20 +114,31 @@ export default class D3BarChart extends React.Component {
 
   // RENDER
   render() {
-    const config = {};
-    config.duration = this.props.duration;
-    config.xscale = this.state.xscale;
-    config.bounds = this.state.bounds;
-    config.orient = this.state.orient;
+    // X-axis configuration
+    const xAxisConfig = {};
+    xAxisConfig.duration = this.props.duration;
+    xAxisConfig.scale = this.state.xscale;
+    xAxisConfig.bounds = this.state.bounds;
+    xAxisConfig.orient = this.state.xorient;
+    console.log("X axis config object defined in barchart:")
+    console.log(xAxisConfig);
+
+    // Y-axis configuration
+    const yAxisConfig = {};
+    yAxisConfig.duration = this.props.duration;
+    yAxisConfig.scale = this.state.yscale;
+    yAxisConfig.bounds = this.state.bounds;
+    yAxisConfig.orient = this.state.yorient;
 
     // Axis group (during testing, inside a hard-coded hierarchy)
+    // <D3yAxis config={yAxisConfig}/>
     return (
-      <div id="outer-wrapper">
+      <div id="outerwrapper">
         <div className="chart-outer-wrapper">
           <div className="chart-inner-wrapper">
             <svg className="svg-wrapper">
-              <g className="chart-main-group" transform="translate(50,50)">
-                <D3xAxis config={config}/>
+              <g className="chart-main-group" transform="translate(50,50)">    
+                <D3xAxis config={xAxisConfig}/>
               </g>
             </svg>
           </div>
