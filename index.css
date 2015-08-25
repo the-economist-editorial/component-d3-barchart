@@ -1,5 +1,6 @@
 @import '@economist/component-d3-xaxis';
 @import '@economist/component-d3-yaxis';
+@import '@economist/component-d3-series-bars';
 
 #outerwrapper {
   position: absolute;
@@ -24,9 +25,3 @@
   width: 100%;
   height: 100%;
 }
-
-/*
-.d3-bar-rect {
-  fill: #998888;
-}
-*/

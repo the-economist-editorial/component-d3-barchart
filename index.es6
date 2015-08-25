@@ -1,7 +1,8 @@
 import React from 'react';
-import d3 from 'd3';
-import D3xAxis from '@economist/component-d3-xaxis';
-import D3yAxis from '@economist/component-d3-yaxis';
+import D3 from 'd3';
+//import D3xAxis from '@economist/component-d3-xaxis';
+//import D3yAxis from '@economist/component-d3-yaxis';
+import D3SeriesBars from '@economist/component-d3-series-bars';
 
 export default class D3BarChart extends React.Component {
 
@@ -23,7 +24,7 @@ export default class D3BarChart extends React.Component {
   // DEFAULT PROPS
   static get defaultProps() {
     return {
-      tempcategories: [
+      tempdata: [
         {"category": "One", "value": 20},
         {"category": "Two", "value": 40},
         {"category": "Three", "value": 60},
@@ -80,17 +81,20 @@ export default class D3BarChart extends React.Component {
     };
 
     // Assemble the x-scale object
-    const xscale = d3.scale.linear()
+    const xscale = D3.scale.linear()
       .range([ 0, innerW ])
       // Currently using the default xdomain prop:
       .domain(this.props.xdomain);
 
     // Assemble the y-scale object
-    const ydomain = this.props.tempcategories.map(function(d) {
+    const ydomain = this.props.tempdata.map(function(d) {
       return d.category;
     })
-    const yscale = d3.scale.ordinal()
-      .range([ innerH, 0 ])
+    const yscale = D3.scale.ordinal()
+      // NOTE: rangebands for bar charts are 'top-to-bottom', unlike
+      // other components that run 'bottom-to-top'. This relates to
+      // sorting...
+      .rangeBands([ 0, innerH ], .1)
       .domain(ydomain);
     // Set state
     this.setState({ xscale, yscale, bounds });
@@ -103,12 +107,12 @@ export default class D3BarChart extends React.Component {
     setTimeout(() => {
       xscale.domain([ 0, 20 ])
         .range([ 0, 380 ]);
-      this.setState({ xscale, 'orient': 'top' });
+      this.setState({ xscale, 'xorient': 'top', 'yorient': 'right'});
     }, 2000);
     setTimeout(() => {
       xscale.domain([ 0, 150 ])
         .range([ 0, 350 ]);
-      this.setState({ xscale, 'orient': 'bottom' });
+      this.setState({ xscale, 'xorient': 'bottom', 'yorient': 'left' });
     }, 4000);
   }
 
@@ -120,8 +124,6 @@ export default class D3BarChart extends React.Component {
     xAxisConfig.scale = this.state.xscale;
     xAxisConfig.bounds = this.state.bounds;
     xAxisConfig.orient = this.state.xorient;
-    console.log("X axis config object defined in barchart:")
-    console.log(xAxisConfig);
 
     // Y-axis configuration
     const yAxisConfig = {};
@@ -130,15 +132,31 @@ export default class D3BarChart extends React.Component {
     yAxisConfig.bounds = this.state.bounds;
     yAxisConfig.orient = this.state.yorient;
 
+    // Bar series configuration
+    const seriesBarsConfig = {};
+    seriesBarsConfig.duration = this.props.duration;
+    seriesBarsConfig.xscale = this.state.xscale;
+    seriesBarsConfig.yscale = this.state.yscale;
+    seriesBarsConfig.bounds = this.state.bounds;
+    seriesBarsConfig.data = this.props.tempdata;
+
+    /* Unresolved:
+        There are a number of things that are hard-coded for now.
+        These include:
+          - the data is baked into the props
+          - scale ranges, domains, etc all hard-coded
+    */
+
     // Axis group (during testing, inside a hard-coded hierarchy)
-    // <D3yAxis config={yAxisConfig}/>
+                // <D3SeriesBars config={seriesBarsConfig}/>
+                // <D3xAxis config={xAxisConfig}/>
+                // <D3yAxis config={yAxisConfig}/>
     return (
       <div id="outerwrapper">
         <div className="chart-outer-wrapper">
           <div className="chart-inner-wrapper">
             <svg className="svg-wrapper">
               <g className="chart-main-group" transform="translate(50,50)">    
-                <D3xAxis config={xAxisConfig}/>
               </g>
             </svg>
           </div>

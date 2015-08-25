@@ -67,7 +67,8 @@
     "d3": "^3.5.6",
     "react": "^0.13.3",
     "@economist/component-d3-xaxis": "^1.1.1",
-    "@economist/component-d3-yaxis": "^1.0.5"
+    "@economist/component-d3-yaxis": "^1.0.5",
+    "@economist/component-d3-series-bars": "^1.0.2"
   },
   "devDependencies": {
     "@economist/component-devpack": "^2.5.0",
