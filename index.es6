@@ -9,8 +9,14 @@ export default class D3BarChart extends React.Component {
   // PROP TYPES
   static get propTypes() {
     return {
+      counter: React.PropTypes.number,
+      dimensions: React.PropTypes.object,
+      duration: React.PropTypes.number,
       hardData: React.PropTypes.array,
+      margins: React.PropTypes.object,
       test: React.PropTypes.string,
+      xOrient: React.PropTypes.string,
+      yOrient: React.PropTypes.string,
     };
   }
 
@@ -21,49 +27,48 @@ export default class D3BarChart extends React.Component {
         // 0
         {
           data: [
-            {"category": "Twenty", "value": 20},
-            {"category": "Forty", "value": 40},
-            {"category": "Sixty", "value": 60},
-            {"category": "Eighty", "value": 80},
+            { 'category': 'Twenty', 'value': 20 },
+            { 'category': 'Forty', 'value': 40 },
+            { 'category': 'Sixty', 'value': 60 },
+            { 'category': 'Eighty', 'value': 80 },
           ],
-          xdomain: [ 0, 80 ],
-          ydomain: [],
-          xOrient: "left",
-          yOrient: "bottom",
+          xDomain: [ 0, 80 ],
+          yDomain: [],
+          xOrient: 'bottom',
+          yOrient: 'left',
         },
         // 1
         {
           data: [
-            {"category": "Nineteen", "value": 19},
-            {"category": "Thirtytwo", "value": 32},
-            {"category": "Forth", "value": 40},
-            {"category": "Four", "value": 4},
+            { 'category': 'Nineteen', 'value': 19 },
+            { 'category': 'Thirtytwo', 'value': 32 },
+            { 'category': 'Forth', 'value': 40 },
+            { 'category': 'Four', 'value': 4 },
           ],
-          xdomain: [ 0, 40 ],
-          ydomain: [],
-          xOrient: "right",
-          yOrient: "top",
+          xDomain: [ 0, 40 ],
+          yDomain: [],
+          xOrient: 'top',
+          yOrient: 'right',
         },
         // 2
         {
           data: [
-            {"category": "One-twenty", "value": 120},
-            {"category": "One-thirtytwo", "value": 132},
-            {"category": "Sixty", "value": 60},
-            {"category": "Seventy", "value": 70},
+            { 'category': 'One-twenty', 'value': 120 },
+            { 'category': 'One-thirtytwo', 'value': 132 },
+            { 'category': 'Sixty', 'value': 60 },
+            { 'category': 'Seventy', 'value': 70 },
           ],
-          xdomain: [ 0, 80 ],
-          ydomain: [],
-          xOrient: "left",
-          yOrient: "bottom",
-        }
+          xDomain: [ 0, 150 ],
+          yDomain: [],
+          xOrient: 'bottom',
+          yOrient: 'left',
+        },
       ],
       duration: 1000,
       margins: { top: 20, right: 30, bottom: 30, left: 100 },
       dimensions: { outerWidth: 500, outerHeight: 300 },
-      xorient: 'bottom',
-      yorient: 'left',
-      width: 300,
+      xOrient: 'bottom',
+      yOrient: 'left',
       // Counter is for tests only:
       counter: 0,
       // xscale: {
@@ -77,19 +82,11 @@ export default class D3BarChart extends React.Component {
   // CONSTRUCTOR
   constructor(props) {
     super(props);
-    this.state = {
-      // This swapping axis orient around is just for demonstration purposes
-      // In the real world, I doubt if we'd want it...
-      xorient: this.props.xorient,
-      yorient: this.props.yorient,
-      counter: this.props.counter,
-    };
-  }
-
-  // GET INITIAL STATE
-  // Calculates state.bounds from size and margins props
-  getInitialState() {
+    // D3 bounds and margins
+    const dimensions = this.props.dimensions;
     const margins = this.props.margins;
+    const outerH = dimensions.outerHeight;
+    const outerW = dimensions.outerWidth;
     const innerW = outerW - margins.left - margins.right;
     const innerH = outerH - margins.top - margins.bottom;
     const bounds = {
@@ -98,9 +95,16 @@ export default class D3BarChart extends React.Component {
       'width': innerW,
       'height': innerH,
     };
-    this.setState({bounds});
+    // Pack state:
+    this.state = {
+      // This swapping axis orient around is just for demonstration purposes
+      // In the real world, I doubt if we'd want it...
+      xOrient: this.props.xOrient,
+      yOrient: this.props.yOrient,
+      counter: this.props.counter,
+      bounds,
+    };
   }
-  // GET INITIAL STATE ends
 
   // COMPONENT WILL MOUNT
   componentWillMount() {
@@ -117,60 +121,91 @@ export default class D3BarChart extends React.Component {
     // const outerW = React.findDOMNode(this).offsetWidth;
     // const outerH = React.findDOMNode(this).offsetHeight;
 
-    // // Assemble the x-scale object
-    // const xscale = D3.scale.linear()
-    //   .range([ 0, innerW ])
-    //   // Currently using the default xdomain prop:
-    //   .domain(this.props.xdomain);
 
-    // // Assemble the y-scale object
-    // const ydomain = this.props.hardData.map(function(d) {
-    //   return d.category;
-    // })
-    // const yscale = D3.scale.ordinal()
-    //   // NOTE: rangebands for bar charts are 'top-to-bottom', unlike
-    //   // other components that run 'bottom-to-top'. This relates to
-    //   // sorting...
-    //   .rangeBands([ 0, innerH ], .1)
-    //   .domain(ydomain);
-    // // Set state
-    // this.setState({ xscale, yscale, bounds });
   }
 
   // COMPONENT DID MOUNT
+  // For testing, just sets a couple of timeouts and increments
+  // a counter to redraw with new data...
   componentDidMount() {
     const counter1 = this.state.counter + 1;
     const counter2 = this.state.counter + 2;
     setTimeout(() => {
       this.setState({ 'counter': counter1 });
-    }, 1000);
+    }, 2000);
     setTimeout(() => {
       this.setState({ 'counter': counter2 });
-    }, 2000);
-
-    // const xscale = this.state.xscale;
-    // For testing, I'm running a couple of spurious re-draws...
-    // setTimeout(() => {
-    //   xscale.domain([ 0, 80 ])
-    //     .range([ 0, 380 ]);
-    //   this.setState({ xscale, 'xorient': 'top', 'yorient': 'right'});
-    // }, 2000);
-    // setTimeout(() => {
-    //   xscale.domain([ 0, 120 ])
-    //     .range([ 0, 350 ]);
-    //   this.setState({ xscale, 'xorient': 'bottom', 'yorient': 'left' });
-    // }, 4000);
+    }, 4000);
   }
 
-  configXAxis(data) {
-    // Default: duration and bounds
+  // CONFIG X-AXIS
+  // Assembles x-axis config object
+  configXAxis(xData) {
+    // Default: duration, bounds and orient
+    const bounds = this.state.bounds;
     const config = {
       duration: this.props.duration,
-      bounds: this.state.bounds
+      bounds,
+      orient: xData.xOrient,
     };
-    config.orient = data.xOrient;
+    // Assemble the x-scale object
+    config.scale = D3.scale.linear()
+      .range([ 0, bounds.width ])
+      .domain(xData.xDomain);
 
+    return config;
+  }
 
+  // CONFIG Y-AXIS
+  // Assembles y-axis config object
+  configYAxis(yData) {
+    // Default: duration, bounds and orient
+    const bounds = this.state.bounds;
+    const config = {
+      duration: this.props.duration,
+      bounds,
+      orient: yData.yOrient,
+    };
+
+    // Assemble the y-scale object
+    const yDomain = yData.data.map(function (d) {
+      return d.category;
+    })
+      // NOTE: rangebands for bar charts are 'top-to-bottom', unlike
+      // other components that run 'bottom-to-top'. This relates to
+      // sorting...
+    config.scale = D3.scale.ordinal()
+      .rangeBands([ 0, bounds.height ], 0.1)
+      .domain(yDomain);
+
+    return config;
+  }
+
+  // CONFIG SERIES BARS
+  // Assembles bar series config object
+  configSeriesBars(seriesData) {
+    // Default: duration, bounds and orient
+    const bounds = this.state.bounds;
+    const config = {
+      duration: this.props.duration,
+      bounds,
+    };
+    // Assemble the x-scale object
+    config.xScale = D3.scale.linear()
+      .range([ 0, bounds.width ])
+      .domain(seriesData.xDomain);
+    // And the data:
+    config.data = seriesData.data;
+    // Assemble the y-scale object
+    const yDomain = seriesData.data.map(function (d) {
+      return d.category;
+    })
+      // NOTE: rangebands for bar charts are 'top-to-bottom', unlike
+      // other components that run 'bottom-to-top'. This relates to
+      // sorting...
+    config.yScale = D3.scale.ordinal()
+      .rangeBands([ 0, bounds.height ], 0.1)
+      .domain(yDomain);
     return config;
   }
 
@@ -178,49 +213,25 @@ export default class D3BarChart extends React.Component {
   render() {
     const counter = this.state.counter;
     const data = this.props.hardData[counter];
-
-    const xAxisConfig = configXAxis(data);
-
-    // // X-axis configuration
-    // const xAxisConfig = {};
-    //    xAxisConfig.duration = this.props.duration;
-    // xAxisConfig.scale = this.state.xscale;
-    // xAxisConfig.bounds = this.state.bounds;
-    //    xAxisConfig.orient = this.state.xorient;
-
-    // // Y-axis configuration
-    // const yAxisConfig = {};
-    // yAxisConfig.duration = this.props.duration;
-    // yAxisConfig.scale = this.state.yscale;
-    // yAxisConfig.bounds = this.state.bounds;
-    // yAxisConfig.orient = this.state.yorient;
-
-    // // Bar series configuration
-    // const seriesBarsConfig = {};
-    // seriesBarsConfig.duration = this.props.duration;
-    // seriesBarsConfig.xScale = this.state.xscale;
-    // seriesBarsConfig.yScale = this.state.yscale;
-    // seriesBarsConfig.bounds = this.state.bounds;
-    // seriesBarsConfig.data = this.props.hardData;
-
-
+    const xAxisConfig = this.configXAxis(data);
+    const yAxisConfig = this.configYAxis(data);
+    const seriesBarsConfig = this.configSeriesBars(data);
     /* Unresolved:
         There are a number of things that are hard-coded for now.
         These include:
           - the data is baked into the props
           - scale ranges, domains, etc all hard-coded
     */
-
     // Axis group (during testing, inside a hard-coded hierarchy)
-                // <D3xAxis config={xAxisConfig}/>
-                // <D3yAxis config={yAxisConfig}/>
-                // <D3SeriesBars config={seriesBarsConfig}/>
     return (
       <div id="outerwrapper">
         <div className="chart-outer-wrapper">
           <div className="chart-inner-wrapper">
             <svg className="svg-wrapper">
               <g className="chart-main-group" transform="translate(50,50)">
+                <D3xAxis config={xAxisConfig}/>
+                <D3yAxis config={yAxisConfig}/>
+                <D3SeriesBars config={seriesBarsConfig}/>
               </g>
             </svg>
           </div>
