@@ -168,9 +168,10 @@ export default class D3BarChart extends React.Component {
     };
 
     // Assemble the y-scale object
-    const yDomain = yData.data.map(function (d) {
-      return d.category;
-    })
+    // const yDomain = yData.data.map(function (d) {
+    //   return d.category;
+    // })
+    const yDomain = yData.data.map(d => d.category);
       // NOTE: rangebands for bar charts are 'top-to-bottom', unlike
       // other components that run 'bottom-to-top'. This relates to
       // sorting...
@@ -197,9 +198,11 @@ export default class D3BarChart extends React.Component {
     // And the data:
     config.data = seriesData.data;
     // Assemble the y-scale object
-    const yDomain = seriesData.data.map(function (d) {
-      return d.category;
-    })
+    const yDomain = seriesData.data.map(d => d.category);
+    // Was:
+    // const yDomain = seriesData.data.map(function (d) {
+    //   return d.category;
+    // })
       // NOTE: rangebands for bar charts are 'top-to-bottom', unlike
       // other components that run 'bottom-to-top'. This relates to
       // sorting...
