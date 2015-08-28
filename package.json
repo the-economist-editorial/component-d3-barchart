@@ -1,6 +1,6 @@
 {
   "name": "@economist/component-d3-barchart",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "description": "D3 bar chart component",
   "author": "The Economist (http://economist.com)",
   "license": "ISC",
