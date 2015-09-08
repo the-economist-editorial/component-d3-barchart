@@ -2,26 +2,15 @@
 @import '@economist/component-d3-yaxis';
 @import '@economist/component-d3-series-bars';
 
-#outerwrapper {
-  position: absolute;
-  top: 100px;
-  left: 100px;
-  width: 500px;
-  height: 350px;
-  background-color: #dfdfdf;
-}
-
-.chart-outer-wrapper {
+.bar-chart-wrapper, .svg-wrapper {
   width: 100%;
   height: 100%;
 }
 
-.chart-inner-wrapper {
-  width: 100%;
-  height: 100%;
-}
-
-.svg-wrapper {
-  width: 100%;
-  height: 100%;
+.chart-main-group {
+   -webkit-transition: all 5000 ease-in-out;
+    -moz-transition: all 5000 ease-in-out;
+    -o-transition: all 5000 ease-in-out;
+    transition: all 5000 ease-in-out; 
+    background-color: yellow; 
 }
