@@ -7,10 +7,10 @@
   height: 100%;
 }
 
+
 .chart-main-group {
    -webkit-transition: all 5000 ease-in-out;
     -moz-transition: all 5000 ease-in-out;
     -o-transition: all 5000 ease-in-out;
-    transition: all 5000 ease-in-out; 
-    background-color: yellow; 
+    transition: all 5000 ease-in-out;
 }

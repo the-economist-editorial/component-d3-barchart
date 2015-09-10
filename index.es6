@@ -3,7 +3,9 @@ import D3 from 'd3';
 import D3xAxis from '@economist/component-d3-xaxis';
 import D3yAxis from '@economist/component-d3-yaxis';
 import D3SeriesBars from '@economist/component-d3-series-bars';
-
+// Set global flag for first forced chart main group transition
+// let firstTransition = true;
+//
 export default class D3BarChart extends React.Component {
 
   // PROP TYPES
@@ -25,24 +27,33 @@ export default class D3BarChart extends React.Component {
     super(props);
     // Pack state:
     this.state = {
+      firstTransition: true,
     };
   }
 
-  // componentWillMount() {
-  //   const config = this.props.config;
-  //   this.setState({transStr:"translate(" + config.bounds.left + ", " + config.bounds.top + ")"});
-  // }
+/*
+  componentDidMount() {
+    const config = this.props.config;
+    const transStr = 'translate(' + config.bounds.left + ', ' + config.bounds.top + ')';
+    const mainGroup = D3.select('.chart-main-group');
+    console.log('componentDidMount: ' + transStr);
+    mainGroup.transition().duration(config.duration).attr('transform', transStr);
+  }
 
-  // componentWillReceiveProps() {
-  //   this.setState({transStr:""});
-  // }
+  // Invoked when new props are received AFTER initial render
+  // This.setState doesn't force a premature render
+  componentWillReceiveProps() {
+    this.setState({ firstTransition: false });
+  }
 
   componentDidUpdate() {
     const config = this.props.config;
-    const transStr = "translate(" + config.bounds.left + ", " + config.bounds.top + ")";
-    const mainGroup = d3.select('.chart-main-group');
-    mainGroup.transition().duration(config.duration).attr("transform", transStr);
+    const transStr = 'translate(' + config.bounds.left + ', ' + config.bounds.top + ')';
+    const mainGroup = D3.select('.chart-main-group');
+    console.log('componentDidUpdate: ' + transStr);
+    mainGroup.transition().duration(config.duration).attr('transform', transStr);
   }
+  */
 
   // CONFIG X-AXIS
   // Assembles x-axis config object with properties:
@@ -121,7 +132,7 @@ export default class D3BarChart extends React.Component {
   // CATCH BAR EVENT
   // Fields events on barchart bars. The incoming object
   // is initially constructed as:
-  /* 
+  /*
     {
       data: {category, value},
       index: number
@@ -130,7 +141,7 @@ export default class D3BarChart extends React.Component {
   // I assume this gets dealt with here. Is there
   // any reason why it would get passed up the tree...?
   catchBarEvent(eventObj) {
-    console.log(eventObj)
+    console.log(eventObj);
   }
 
   // RENDER
@@ -139,25 +150,29 @@ export default class D3BarChart extends React.Component {
     const xAxisConfig = this.configXAxis(config);
     const yAxisConfig = this.configYAxis(config);
     const seriesBarsConfig = this.configSeriesBars(config);
-
-    // Main group translation string:
-    // const transStr = "translate(" + config.bounds.left + ", " + config.bounds.top + ")";
-    //const transStr = this.state.transStr;
-    //console.log(transStr);
-              // <g className="chart-main-group" transform={transStr}>
-    return (      
-        <div className="bar-chart-wrapper">
-            <svg className="svg-wrapper">
-              <g className="chart-main-group">
-                <D3xAxis config={xAxisConfig}/>
-                <D3yAxis config={yAxisConfig}/>
-                <D3SeriesBars 
-                  config={seriesBarsConfig}
-                  passBarClick={this.catchBarEvent.bind(this)}
-                />
-              </g>
-            </svg>
-        </div>
+    // Main group, with translation string on first render:
+    let transStr;
+    if (this.state.firstTransition) {
+      transStr = 'translate(' + config.bounds.left + ', ' + config.bounds.top + ')';
+    } else {
+      // transStr = '';
+      transStr = 'translate(' + config.bounds.left + ', ' + config.bounds.top + ')';
+    }
+    // transStr = '';
+    console.log('Render: ' + transStr);
+    return (
+      <div className="bar-chart-wrapper">
+        <svg className="svg-wrapper">
+          <g className="chart-main-group" transform={transStr}>
+            <D3xAxis config={xAxisConfig}/>
+            <D3yAxis config={yAxisConfig}/>
+            <D3SeriesBars
+              config={seriesBarsConfig}
+              passBarClick={this.catchBarEvent.bind(this)}
+            />
+          </g>;
+        </svg>
+      </div>
     );
   }
 }
