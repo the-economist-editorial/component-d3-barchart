@@ -3,9 +3,7 @@ import D3 from 'd3';
 import D3xAxis from '@economist/component-d3-xaxis';
 import D3yAxis from '@economist/component-d3-yaxis';
 import D3SeriesBars from '@economist/component-d3-series-bars';
-// Set global flag for first forced chart main group transition
-// let firstTransition = true;
-//
+
 export default class D3BarChart extends React.Component {
 
   // PROP TYPES
@@ -27,33 +25,43 @@ export default class D3BarChart extends React.Component {
     super(props);
     // Pack state:
     this.state = {
-      firstTransition: true,
+      // Duration defaults to zero for initial render.
+      // Thereafter, componentWillReceiveProps overwrites
+      // with inherited duration
+      duration: 0,
     };
   }
 
-/*
+  //
+  // =======================
+  // React lifecycle methods:
+  // =======================
+
+  // Invoked after initial mount
   componentDidMount() {
-    const config = this.props.config;
-    const transStr = 'translate(' + config.bounds.left + ', ' + config.bounds.top + ')';
-    const mainGroup = D3.select('.chart-main-group');
-    console.log('componentDidMount: ' + transStr);
-    mainGroup.transition().duration(config.duration).attr('transform', transStr);
+    this.mainD3GroupTransition();
   }
 
   // Invoked when new props are received AFTER initial render
-  // This.setState doesn't force a premature render
-  componentWillReceiveProps() {
-    this.setState({ firstTransition: false });
+  // This.setState doesn't force a premature render. So I'm
+  // just using this to force use of inherited duration ofter
+  // initial render is forced to default zero...
+  componentWillReceiveProps(newprops) {
+    this.setState({
+      duration: newprops.config.duration,
+      // duration: 1000,
+     });
   }
 
+  // Invoked after post-initial renders
   componentDidUpdate() {
-    const config = this.props.config;
-    const transStr = 'translate(' + config.bounds.left + ', ' + config.bounds.top + ')';
-    const mainGroup = D3.select('.chart-main-group');
-    console.log('componentDidUpdate: ' + transStr);
-    mainGroup.transition().duration(config.duration).attr('transform', transStr);
+    this.mainD3GroupTransition();
   }
-  */
+
+  //
+  // ==================================
+  // D3 component configuration objects:
+  // ==================================
 
   // CONFIG X-AXIS
   // Assembles x-axis config object with properties:
@@ -127,7 +135,20 @@ export default class D3BarChart extends React.Component {
     return config;
   }
 
-  // Event fielder:
+  //
+  // =========================
+  // Event handlers and others:
+  // =========================
+
+  // MAIN D3 GROUP TRANSITION
+  // Called from componentDidMount and componentDidUpdate
+  // Animates main D3 group to position
+  mainD3GroupTransition() {
+    const config = this.props.config;
+    const transStr = 'translate(' + config.bounds.left + ', ' + config.bounds.top + ')';
+    const mainGroup = D3.select('.chart-main-group');
+    mainGroup.transition().duration(config.duration).attr('transform', transStr);
+  }
 
   // CATCH BAR EVENT
   // Fields events on barchart bars. The incoming object
@@ -140,30 +161,40 @@ export default class D3BarChart extends React.Component {
   */
   // I assume this gets dealt with here. Is there
   // any reason why it would get passed up the tree...?
-  catchBarEvent(eventObj) {
-    console.log(eventObj);
-  }
+  // catchBarEvent(eventObj) {
+  //   console.log(eventObj);
+  // }
+  // ========== COMM'D OUT FOR LINTING ==========
 
   // RENDER
   render() {
     const config = this.props.config;
+    // Overwrite duration: this allows me to force zero duration
+    // at initial render...
+    config.duration = this.state.duration;
+    // Config objects for the various d3 components:
     const xAxisConfig = this.configXAxis(config);
     const yAxisConfig = this.configYAxis(config);
     const seriesBarsConfig = this.configSeriesBars(config);
-    // Main group, with translation string on first render:
+    //
+    // This is dead code:
+    // Early on, I tried to animate the main d3 chart group's position
+    // here. But in the end it seems better to let componentDidMount and
+    // componentDidUpdate force D3 transitions...
+    /*
     let transStr;
     if (this.state.firstTransition) {
       transStr = 'translate(' + config.bounds.left + ', ' + config.bounds.top + ')';
     } else {
-      // transStr = '';
-      transStr = 'translate(' + config.bounds.left + ', ' + config.bounds.top + ')';
+      transStr = '';
     }
-    // transStr = '';
-    console.log('Render: ' + transStr);
+          // <g className="chart-main-group" transform={transStr}>
+    */
+
     return (
       <div className="bar-chart-wrapper">
         <svg className="svg-wrapper">
-          <g className="chart-main-group" transform={transStr}>
+          <g className="chart-main-group">
             <D3xAxis config={xAxisConfig}/>
             <D3yAxis config={yAxisConfig}/>
             <D3SeriesBars
