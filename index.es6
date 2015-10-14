@@ -17,6 +17,24 @@ export default class D3BarChart extends React.Component {
   // DEFAULT PROPS
   static get defaultProps() {
     return {
+      config: {
+        'context': 'print',
+        'data': [
+          { 'category': 'Twenty', 'value': 20 },
+          { 'category': 'Forty', 'value': 40 },
+          { 'category': 'Seventy', 'value': 70 },
+          { 'category': 'Eighty', 'value': 80 },
+        ],
+        'dimensions': { 'width': 500, 'height': 300 },
+        'duration': 0,
+        'margins': { 'top': 30, 'right': 30, 'bottom': 30, 'left': 60 },
+        'xDomain': [ 0, 80 ],
+        'yDomain': [],
+        'xOrient': 'bottom',
+        'yOrient': 'left',
+        'style': 'bars',
+        bounds: { 'left': 50, 'top': 50, 'width': 500, 'height': 150 },
+      },
     };
   }
 
@@ -161,9 +179,9 @@ export default class D3BarChart extends React.Component {
   */
   // I assume this gets dealt with here. Is there
   // any reason why it would get passed up the tree...?
-  // catchBarEvent(eventObj) {
-  //   console.log(eventObj);
-  // }
+  catchBarEvent(eventObj) {
+    eventObj += 'OK';
+  }
   // ========== COMM'D OUT FOR LINTING ==========
 
   // RENDER
